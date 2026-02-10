@@ -78,6 +78,17 @@ class FullscreenActivity : AppCompatActivity() {
         binding = ActivityFullscreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        /**
+         * 액션바(또는 툴바) 좌측 상단에 '뒤로가기(Up)' 화살표 버튼을 활성화하는 기능입니다.
+         * 사용자의 눈에는 단순한 '뒤로가기'처럼 보이지만, 기술적으로는 **'상위 계층으로 이동(Up Navigation)'**을 의미합니다
+         *
+         * Back 버튼 vs Up 버튼의 차이
+         * 이 버튼을 이해할 때 가장 중요한 개념입니다.
+         * 구분   Back 버튼 (하단 네비게이션)          Up 버튼 (액션바 화살표)
+         * 철학   시간순 이동 (방금 본 화면으로)         계층순 이동 (부모 화면으로)
+         * 동작   앱의 이력(History)을 거슬러 올라감     앱의 구조적 트리(Tree)를 올라감
+         * 범위   앱 외부(홈 화면 등)까지 나감           앱 내부의 상위 구조까지만 이동
+         */
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         isFullscreen = true

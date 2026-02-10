@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -13,6 +14,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,10 +28,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -37,7 +44,10 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class FullscreenActivityCompose : ComponentActivity() {
 
@@ -125,7 +135,11 @@ class FullscreenActivityCompose : ComponentActivity() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .clickable { viewModel.toggleFullscreen() } // 전체 화면 터치 시 토글
+                .clickable {
+                    if(!isControlsVisible){
+                        viewModel.toggleFullscreen()
+                    }
+                } // 전체 화면 터치 시 토글
         ) {
             // 1. 메인 콘텐츠 (기존 TextView 역할)
             Text(
@@ -173,22 +187,138 @@ class FullscreenActivityCompose : ComponentActivity() {
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(
-                        onClick = {
-                        /* 버튼 클릭 로직 */
-                            viewModel.toggleFullscreen()
-                        },
-                        modifier = Modifier.pointerInput(Unit) {
-                            // 터치 시 자동 숨김 예약 (기존 delayHideTouchListener 역할)
-                            detectTapGestures(onPress = {
-                                // 필요한 경우 여기서 타이머 초기화 로직 추가
-                            })
-                        }
-                    ) {
-                        Text("DUMMY BUTTON")
-                    }
+//                    ButtonNormal(viewModel)   // 버튼 클릭 시 동작
+//                    ButtonSchedule(viewModel) // Box 영역 터치를 감지
+                    ButtonInteraction(viewModel)    // 버튼의 interactionSource 를 사용해서 눌림 감지
                 }
             }
+        }
+    }
+
+    /** 버튼 클릭 전체화면으로 전환(일반 클릭 시 동작) */
+    @Composable
+    fun ButtonNormal(viewModel: FullscreenViewModel){
+        Button(
+            onClick = {
+                /* 버튼 클릭 로직 */
+                viewModel.toggleFullscreen()
+            },
+
+            modifier = Modifier.pointerInput(Unit) {
+                // 터치 시 자동 숨김 예약 (기존 delayHideTouchListener 역할)
+                detectTapGestures(onPress = {
+                    // 필요한 경우 여기서 타이머 초기화 로직 추가
+                })
+            }
+        ) {
+            Text("DUMMY BUTTON")
+        }
+    }
+
+    /** 버튼에서 손을 뗀 3초 후 전체화면으로 전환(Box 영역의 터치를 감지하여 처리) */
+    @Composable
+    fun ButtonSchedule(viewModel: FullscreenViewModel){
+        val coroutineScope = rememberCoroutineScope ()
+        // 타이머 작업을 관리할 Job 변수
+        var hideJob by remember { mutableStateOf<Job?>(null) }
+
+        // 자동 숨김 예약 함수
+        fun scheduleHide(){
+            hideJob?.cancel()   // 기존 예약이 있다면 취소
+            hideJob = coroutineScope.launch {
+                delay(3000) // 3초 대기
+                viewModel.setFullscreen(true)   // 전체 화면으로 전환(컨트롤 숨김)
+            }
+        }
+
+        Box(
+            // Modifier.pointerInput과 detectTapGestures를 활용하면
+            // 기존 안드로이드 뷰 방식의 delayHideTouchListener와 동일한 기능을 구현할 수 있습니다.
+            modifier = Modifier.pointerInput(Unit) {
+                // Button의 onClick보다 pointerInput이 먼저 이벤트를 가로챌 수 있습니다.
+                // 아래와 같이 구성하면 터치 유지 중에는 타이머가 멈추고, 손을 떼는 순간 타이머가 재개되는 delayHide 로직이 완성됩니다.
+                detectTapGestures(
+                    onPress = {
+                        // 1. 터치가 시작될 때 (onPress)
+                        // 기존에 예약된 숨김 타이머를 취소합니다. (사용자가 조작 중이므로)
+                        hideJob?.cancel()
+
+                        val released = try {
+                            // detectTapGestures 내부의 onPress 블록에서 사용되는 일시 중단 함수입니다.
+                            // 사용자가 손가락을 뗄 때까지 다음 코드로 넘어가지 않고 기다립니다.
+                            awaitRelease()  // 사용자가 손가락을 뗄 때까지 대기
+                            true
+                        } catch (c: CancellationException) {
+                            false
+                        }
+
+                        if (released) {
+                            // 2. 여기서 다시 타이머 예약 (터치 종료)
+                            scheduleHide()
+                        }
+                    })
+            }
+        ){
+            // 버튼인 경우 click
+            Text(
+                text = "DUMMY BUTTON",
+                color = Color.White,
+                modifier = Modifier
+            )
+        }
+    }
+
+    /**
+     * 버튼의 상호작용을 추적해서 버튼에서 손을 뗀 경우 전체 화면으로 전환(가장 추천하는 방식)
+     */
+    @Composable
+    fun ButtonInteraction(viewModel: FullscreenViewModel){
+        val coroutineScope = rememberCoroutineScope ()
+        // 타이머 작업을 관리할 Job 변수
+        var hideJob by remember { mutableStateOf<Job?>(null) }
+
+        // 자동 숨김 예약 함수
+        fun scheduleHide(){
+            hideJob?.cancel()   // 기존 예약이 있다면 취소
+            hideJob = coroutineScope.launch {
+                delay(3000) // 3초 대기
+                viewModel.setFullscreen(true)   // 전체 화면으로 전환(컨트롤 숨김)
+            }
+        }
+
+        // 버튼의 상호작용 상태를 추적하는 객체
+        val interactionSource = remember { MutableInteractionSource() }
+
+        /**
+         * 다양한 상태를 한눈에 관찰하기
+         * 버튼은 누르는 것(Press) 외에도 다양한 상태를 가집니다. 이를 통해 더 정교한 UX를 만들 수 있어요.
+         *
+         * collectIsFocusedAsState(): 키보드나 TV 리모컨 등으로 버튼에 포커스가 갔는지 확인 (TV 앱 개발 시 필수!)
+         * collectIsHoveredAsState(): 마우스 커서가 버튼 위에 올라갔는지 확인 (데스크톱/태블릿용 앱 개발 시 유용)
+         * collectIsDraggedAsState(): (슬라이더나 페이저 등에서) 사용자가 요소를 끌고 있는지 확인
+         */
+        val isPressed by interactionSource.collectIsPressedAsState()
+
+        // 눌림 상태에 따라 크기(scale) 애니메이션 사용
+        val scale by animateFloatAsState(if(isPressed) 0.95f else 1f)
+
+        // isPressed 상태가 변할 때마다 실행됨
+        LaunchedEffect(isPressed) {
+            if(isPressed){
+                // 버튼을 누르고 있는 동안 : 타이머 중지
+                hideJob?.cancel()
+            } else {
+                // 버튼에서 손을 땠을 때 : 타이머 시작
+                scheduleHide()
+            }
+        }
+
+        Button(
+            onClick = { viewModel.toggleFullscreen() },
+            interactionSource = interactionSource,   // 버튼에 연결
+            modifier = Modifier.graphicsLayer(scaleX = scale, scaleY = scale)
+        ){
+            Text("Dummy Button")
         }
     }
 }
