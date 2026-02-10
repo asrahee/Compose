@@ -1,52 +1,30 @@
 package com.example.compose
 
 import android.content.Intent
-import android.graphics.Color.alpha
 import android.os.Bundle
-import android.preference.PreferenceActivity
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.PagerSnapDistance
-import androidx.compose.foundation.pager.VerticalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,7 +67,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedButton
@@ -108,21 +85,16 @@ import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -132,30 +104,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
-import androidx.compose.ui.zIndex
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.compose.ui.main.FullscreenActivity
 import com.example.compose.ui.main.FullscreenActivityCompose
 import com.example.compose.ui.main.HorizontalPagerActivity
-import com.example.compose.ui.theme.AnimatedOrderedListViewModel
 import com.example.compose.ui.theme.ComposeTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.jvm.java
-import kotlin.math.absoluteValue
 
+/** 메인 액티비티 */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -191,6 +151,7 @@ class MainActivity : ComponentActivity() {
 //
 //                            // 일반 버튼
                             FilledButtonExample {
+                                // 풀 화면 appcompat activity 호출
                                 startActivity(
                                     Intent(
                                         this@MainActivity,
@@ -198,7 +159,9 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                             }
+
                             FilledTonalButtonExample {
+                                // 풀 화면 compose activity 호출
                                 startActivity(
                                     Intent(
                                         this@MainActivity,
@@ -208,6 +171,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             OutlineButtonExample {
+                                // compose HorizontalPager 액티비티 호출
                                 startActivity(
                                     Intent(
                                         this@MainActivity,
@@ -279,7 +243,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun FilledButtonExample(onClick: () -> Unit){
     Button(onClick = { onClick()}) {
-        Text("Filled")
+        Text("FullscreenActivity(Filled Button)")
     }
 }
 
@@ -287,7 +251,7 @@ fun FilledButtonExample(onClick: () -> Unit){
 @Composable
 fun FilledTonalButtonExample(onClick: () -> Unit) {
     FilledTonalButton(onClick = { onClick() }) {
-        Text("Tonal")
+        Text("FullscreenActivityCompose(Tonal Button)")
     }
 }
 
@@ -295,7 +259,7 @@ fun FilledTonalButtonExample(onClick: () -> Unit) {
 @Composable
 fun OutlineButtonExample(onClick: () -> Unit) {
     OutlinedButton(onClick = { onClick() } ) {
-        Text("Outlined")
+        Text("HorizontalPagerActivity(Outlined Button)")
     }
 }
 
@@ -1081,105 +1045,6 @@ fun VerticalDividerExample() {
         Text("First item in row")
         VerticalDivider(color = MaterialTheme.colorScheme.secondary)
         Text("Second item in row")
-    }
-}
-
-
-// [START android_compose_layouts_list_listanimateditems]
-@Composable
-fun ListAnimatedItems(
-    items: List<String>,
-    modifier: Modifier = Modifier,
-    listState: LazyListState = rememberLazyListState() // 외부에서 주입받음
-) {
-
-//    // 1. 스크롤 상태를 관리하는 state 생성
-//    val listState = rememberLazyListState()
-//
-//    // 2. items의 사이즈가 변경될 때마다 실행되는 Effect
-//    // items.size를 키값으로 두어 데이터 개수가 변할 때만 트리거됩니다.
-//    LaunchedEffect(items.size) {
-//        if (items.isNotEmpty()) {
-//            // 맨 처음(index 0) 아이템으로 부드럽게 스크롤
-//            listState.animateScrollToItem(items.size - 1)
-//        }
-//    }
-
-    LazyColumn(
-        modifier = modifier,
-        state = listState   // 주입받은 상태를 연결
-    ) {
-        stickyHeader { Header() }
-
-        // Use a unique key per item, so that animations work as expected.
-        items(items, key = { it }) {
-            ListItem(
-                headlineContent = { Text(it) },
-                modifier = Modifier
-                    .animateItem(
-                        // Optionally add custom animation specs
-                    )
-                    .fillParentMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 0.dp),
-            )
-        }
-    }
-
-    /**
-     * 첫 번째 아이템을 지나쳤는지 체크하고 특정 동작을 하려는 경우 아래와 같이 사용
-     *
-     * 왜 이렇게 복잡하게 쓰나요? (이유와 장점)
-     * 만약 snapshotFlow를 쓰지 않고 일반적인 컴포저블 본문에서 인덱스를 체크한다면,
-     * 사용자가 스크롤할 때마다 **수백 번의 리컴포지션(Recomposition)**이 발생하여 앱이 버벅거릴 수 있습니다.
-     *
-     * 이 방식의 장점:
-     * 성능 최적화: distinctUntilChanged 덕분에 실제로 상태가 "변화"했을 때만 로직이 실행됩니다.
-     * 비동기 처리: 스크롤 감지와 분석 데이터 전송을 메인 UI 스레드 방해 없이 코루틴 스코프 내에서 처리합니다.
-     * 정확성: "사용자가 리스트 상단을 떠났다"는 시점을 딱 한 번만 포착할 수 있습니다.
-     *
-     * 4. 실전 활용 예시
-     * 이 로직은 분석 서비스 전송 외에도 다음과 같은 곳에 자주 쓰입니다.
-     * 사용자가 아래로 내리면 '맨 위로 가기' 버튼을 보여줄 때
-     * 헤더의 디자인을 축소형으로 바꿀 때
-     * 특정 지점까지 읽었을 때 '읽음 처리'를 할 때
-     */
-    LaunchedEffect(listState) {
-        // snapshotFlow { ... }는 이 블록 안에서 참조하는 상태값이 바뀔 때마다 그 값을 Flow 데이터 스트림으로 내보냅니다.
-        // listState.firstVisibleItemIndex는 Compose의 MutableState입니다. 이 값은 스크롤할 때마다 수시로 변합니다.
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .map { index -> index > 0 }
-            // 매우 중요한 최적화 단계입니다. 값이 이전과 다를 때만 아래로 데이터를 보냅니다.
-            // 예: 사용자가 계속 아래로 스크롤해서 인덱스가 1, 2, 3...으로 변해도 결과는 계속 true, true, true입니다.
-            // 이때 이 연산자는 첫 번째 true만 통과시키고 나머지는 차단합니다.
-            .distinctUntilChanged()
-            // 값이 true인 경우(즉, 첫 번째 아이템을 완전히 지나친 순간)에만 데이터를 통과시킵니다.
-            .filter { it }
-            // .collect 를 호출해야 비로소 감시가 시작됨
-
-            // LaunchedEffect 안에서 snapshotFlow 를 사용하는 이유
-            // collect 는 suspend function 으로 . 함수는 코루틴 안에서 실행되어야 하면, 완료될 때까지 해당 코루틴을 점유한다
-            // 컴포저블 자체는 중단 함수가 아니므로 collect 를 직접 쓸 수 없다. LaunchedEffect 를 사용하면
-            // 컴포저블이 화면에서 사라질 때(onCleared) 자동을로 감시(Flow 수집)을 중단한다. 만일 LaunchedEffect
-            // 없이 감시를 시작할 수 있다면, 화면을 나간 후에도 계속 메모리를 소모하여 스크롤을 감시하는 '좀비 프로세스'
-            // 가 된다.
-            .collect {
-                Log.d("ListAnimatedItems", "첫 번째 아이템 지나침")
-            }
-    }
-}
-// [END android_compose_layouts_list_listanimateditems]
-
-@Composable
-private fun Header(){
-    // 스티키 헤더 표시를 위해 설정을 추가함
-    Surface(
-        modifier = Modifier
-//            .fillMaxWidth()
-            .zIndex(1f), // 다른 아이템보다 위에 그려지도록 설정
-//        color = MaterialTheme.colorScheme.surface, // 배경색을 불투명하게 지정
-//        tonalElevation = 4.dp // 살짝 그림자를 주면 더 명확히 구분됩니다
-    ) {
-        OutlineButtonExample {}
     }
 }
 

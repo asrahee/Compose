@@ -24,7 +24,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
@@ -33,6 +36,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -55,17 +59,24 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.compose.FilledButtonExample
-import com.example.compose.ListAnimatedItems
+import com.example.compose.OutlineButtonExample
 import com.example.compose.ui.theme.AnimatedOrderedListViewModel
 import com.example.compose.ui.theme.ComposeTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
+/**
+ * lazy column, HorizontalPager 샘플 액티비티
+ */
 class HorizontalPagerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,15 +102,16 @@ class HorizontalPagerActivity : ComponentActivity() {
 @Composable
 fun FullscreenScreen(){
     // 가장 간단한 형태의 lazy list
-//                        lazyColumExample()
+//    lazyColumExample()
 
     // 아이템 제거, 추가 애니메이션 lazy colum
-//                        AnimatedOrderedListScreen()
+//    AnimatedOrderedListScreen()
 
     HorizontalPager()
 }
 
-/******************************************** LazyList  *******************************************/
+
+/** 기본 lazy column 샘플 */
 @Composable
 fun lazyColumExample(){
     LazyColumn {
@@ -125,6 +137,9 @@ fun lazyColumExample(){
     }
 }
 
+/**
+ * 리스트 추가, 제거, 종류별 정렬 버튼 샘플/
+ */
 @Composable
 fun AnimatedOrderedListScreen(
     viewModel: AnimatedOrderedListViewModel = viewModel(),
@@ -162,7 +177,8 @@ private fun ListAnimatedItemsExample(
     val listState = rememberLazyListState()
     // 2. 코루틴 스코프 생성(버튼 클릭 시 suspend 함수를 실행하기 위함)
     val coroutineScope = rememberCoroutineScope()
-    // 스크롤 로직을 담은 공통 함수
+
+    // 리스트의 최상단 아이템으로 스크롤 이동
     val scrollToTop = {
         coroutineScope.launch {
             if(data.isNotEmpty()){
@@ -174,6 +190,7 @@ private fun ListAnimatedItemsExample(
         }
     }
 
+    // 리스트의 마지막 아이템으로 스크롤 이동
     val scrollToBottom = {
         coroutineScope.launch {
             if(data.isNotEmpty()){
@@ -220,6 +237,102 @@ private fun ListAnimatedItemsExample(
             // 4. 리스트 상태 전달
             ListAnimatedItems(data, listState = listState)
         }
+    }
+}
+
+@Composable
+fun ListAnimatedItems(
+    items: List<String>,
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState() // 외부에서 주입받음
+) {
+
+//    // 1. 스크롤 상태를 관리하는 state 생성
+//    val listState = rememberLazyListState()
+//
+//    // 2. items의 사이즈가 변경될 때마다 실행되는 Effect
+//    // items.size를 키값으로 두어 데이터 개수가 변할 때만 트리거됩니다.
+//    LaunchedEffect(items.size) {
+//        if (items.isNotEmpty()) {
+//            // 맨 처음(index 0) 아이템으로 부드럽게 스크롤
+//            listState.animateScrollToItem(items.size - 1)
+//        }
+//    }
+
+    LazyColumn(
+        modifier = modifier,
+        state = listState   // 주입받은 상태를 연결
+    ) {
+        stickyHeader { Header() }
+
+        // Use a unique key per item, so that animations work as expected.
+        items(items, key = { it }) {
+            ListItem(
+                headlineContent = { Text(it) },
+                modifier = Modifier
+                    .animateItem(
+                        // Optionally add custom animation specs
+                    )
+                    .fillParentMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 0.dp),
+            )
+        }
+    }
+
+    /**
+     * 첫 번째 아이템을 지나쳤는지 체크하고 특정 동작을 하려는 경우 아래와 같이 사용
+     *
+     * 왜 이렇게 복잡하게 쓰나요? (이유와 장점)
+     * 만약 snapshotFlow를 쓰지 않고 일반적인 컴포저블 본문에서 인덱스를 체크한다면,
+     * 사용자가 스크롤할 때마다 **수백 번의 리컴포지션(Recomposition)**이 발생하여 앱이 버벅거릴 수 있습니다.
+     *
+     * 이 방식의 장점:
+     * 성능 최적화: distinctUntilChanged 덕분에 실제로 상태가 "변화"했을 때만 로직이 실행됩니다.
+     * 비동기 처리: 스크롤 감지와 분석 데이터 전송을 메인 UI 스레드 방해 없이 코루틴 스코프 내에서 처리합니다.
+     * 정확성: "사용자가 리스트 상단을 떠났다"는 시점을 딱 한 번만 포착할 수 있습니다.
+     *
+     * 4. 실전 활용 예시
+     * 이 로직은 분석 서비스 전송 외에도 다음과 같은 곳에 자주 쓰입니다.
+     * 사용자가 아래로 내리면 '맨 위로 가기' 버튼을 보여줄 때
+     * 헤더의 디자인을 축소형으로 바꿀 때
+     * 특정 지점까지 읽었을 때 '읽음 처리'를 할 때
+     */
+    LaunchedEffect(listState) {
+        // snapshotFlow { ... }는 이 블록 안에서 참조하는 상태값이 바뀔 때마다 그 값을 Flow 데이터 스트림으로 내보냅니다.
+        // listState.firstVisibleItemIndex는 Compose의 MutableState입니다. 이 값은 스크롤할 때마다 수시로 변합니다.
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .map { index -> index > 0 }
+            // 매우 중요한 최적화 단계입니다. 값이 이전과 다를 때만 아래로 데이터를 보냅니다.
+            // 예: 사용자가 계속 아래로 스크롤해서 인덱스가 1, 2, 3...으로 변해도 결과는 계속 true, true, true입니다.
+            // 이때 이 연산자는 첫 번째 true만 통과시키고 나머지는 차단합니다.
+            .distinctUntilChanged()
+            // 값이 true인 경우(즉, 첫 번째 아이템을 완전히 지나친 순간)에만 데이터를 통과시킵니다.
+            .filter { it }
+            // .collect 를 호출해야 비로소 감시가 시작됨
+
+            // LaunchedEffect 안에서 snapshotFlow 를 사용하는 이유
+            // collect 는 suspend function 으로 . 함수는 코루틴 안에서 실행되어야 하면, 완료될 때까지 해당 코루틴을 점유한다
+            // 컴포저블 자체는 중단 함수가 아니므로 collect 를 직접 쓸 수 없다. LaunchedEffect 를 사용하면
+            // 컴포저블이 화면에서 사라질 때(onCleared) 자동을로 감시(Flow 수집)을 중단한다. 만일 LaunchedEffect
+            // 없이 감시를 시작할 수 있다면, 화면을 나간 후에도 계속 메모리를 소모하여 스크롤을 감시하는 '좀비 프로세스'
+            // 가 된다.
+            .collect {
+                Log.d("ListAnimatedItems", "첫 번째 아이템 지나침")
+            }
+    }
+}
+
+@Composable
+private fun Header(){
+    // 스티키 헤더 표시를 위해 설정을 추가함
+    Surface(
+        modifier = Modifier
+//            .fillMaxWidth()
+            .zIndex(1f), // 다른 아이템보다 위에 그려지도록 설정
+//        color = MaterialTheme.colorScheme.surface, // 배경색을 불투명하게 지정
+//        tonalElevation = 4.dp // 살짝 그림자를 주면 더 명확히 구분됩니다
+    ) {
+        OutlineButtonExample {}
     }
 }
 
@@ -336,7 +449,7 @@ private fun HorizontalPager(){
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        androidx.compose.foundation.pager.HorizontalPager(
+        HorizontalPager (
 //    VerticalPager(state = pagerState) { page ->
             state = pagerState,
 
