@@ -109,7 +109,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.example.compose.ui.main.FullscreenActivity
 import com.example.compose.ui.main.FullscreenActivityCompose
-import com.example.compose.ui.main.HorizontalPagerActivity
+import com.example.compose.ui.main.flow.FlowActivity
+import com.example.compose.ui.main.pager.HorizontalPagerActivity
 import com.example.compose.ui.theme.ComposeTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -180,7 +181,15 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-//                            ElevatedButtonExample {}
+                            ElevatedButtonExample {
+                                // compose HorizontalPager 액티비티 호출
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        FlowActivity::class.java
+                                    )
+                                )
+                            }
 //                            TextButtonExample {}
 //
 //                            // 플로팅 버튼
@@ -274,7 +283,7 @@ fun ElevatedButtonExample(onClick: () -> Unit) {
             hoveredElevation = 6.dp,
             disabledElevation = 0.dp
         )) {
-        Text("Elevated")
+        Text("FlowActivity(Elevated Button)")
     }
 }
 
