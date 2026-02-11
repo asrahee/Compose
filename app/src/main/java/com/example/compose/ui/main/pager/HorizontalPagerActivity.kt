@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -270,6 +271,16 @@ fun ListAnimatedItems(
             ListItem(
                 headlineContent = { Text(it) },
                 modifier = Modifier
+                    /**
+                     * 최소 표시 비율 설정
+                     * minFractionVisible 매개 변수 값 설정으로 화면에 어느정도 표시될 때 처리될지를 결정
+                     * 1.0f 는 컴포저블이 화면에 완전히 표시되어야 함
+                     * 0.2f 는 화면에 0.2% 표시되면 처리 시작
+                     */
+                    .onVisibilityChanged(minFractionVisible = 0.2f){
+                        // Call specific logic here
+                        // viewModel.fetchDataFromNetwork()
+                    }
                     .animateItem(
                         // Optionally add custom animation specs
                     )

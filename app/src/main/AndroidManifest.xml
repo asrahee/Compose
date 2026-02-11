@@ -52,6 +52,16 @@
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
+        <activity
+            android:name=".ui.main.adaptivelayout.AdaptiveActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Compose" />
+
+        <activity
+            android:name=".ui.main.tracking.TrackingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Compose" />
+
     </application>
 
 </manifest>

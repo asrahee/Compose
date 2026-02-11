@@ -109,9 +109,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.example.compose.ui.main.FullscreenActivity
 import com.example.compose.ui.main.FullscreenActivityCompose
+import com.example.compose.ui.main.adaptivelayout.AdaptiveActivity
 import com.example.compose.ui.main.customlayout.CustomLayoutActivity
 import com.example.compose.ui.main.flow.FlowActivity
 import com.example.compose.ui.main.pager.HorizontalPagerActivity
+import com.example.compose.ui.main.tracking.TrackingActivity
 import com.example.compose.ui.theme.ComposeTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -201,10 +203,28 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                             }
-//
-//                            // 플로팅 버튼
-//                            FloatingExample {}
-//                            FloatingSmallExample {}
+
+                            // 플로팅 버튼
+                            FloatingExample {
+                                // 적응형 레이아웃 액티비티 호출
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        AdaptiveActivity::class.java
+                                    )
+                                )
+                            }
+
+                            FloatingSmallExample {
+                                // compose 노출 추적 액티비티 호출
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        TrackingActivity::class.java
+                                    )
+                                )
+
+                            }
 //                            LargeFloatingExample {}
 //                            ExtendedExample {}
 //
