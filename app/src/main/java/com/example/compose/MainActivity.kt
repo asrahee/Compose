@@ -109,6 +109,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.example.compose.ui.main.FullscreenActivity
 import com.example.compose.ui.main.FullscreenActivityCompose
+import com.example.compose.ui.main.customlayout.CustomLayoutActivity
 import com.example.compose.ui.main.flow.FlowActivity
 import com.example.compose.ui.main.pager.HorizontalPagerActivity
 import com.example.compose.ui.theme.ComposeTheme
@@ -182,7 +183,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             ElevatedButtonExample {
-                                // compose HorizontalPager 액티비티 호출
+                                // flow column/row 테스트 액티비티 호출
                                 startActivity(
                                     Intent(
                                         this@MainActivity,
@@ -190,7 +191,16 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                             }
-//                            TextButtonExample {}
+
+                            TextButtonExample {
+                                // 커스텀 레이아웃 액티비티 호출
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        CustomLayoutActivity::class.java
+                                    )
+                                )
+                            }
 //
 //                            // 플로팅 버튼
 //                            FloatingExample {}

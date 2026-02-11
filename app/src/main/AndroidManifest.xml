@@ -46,6 +46,12 @@
             android:name=".ui.main.flow.FlowActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
+
+        <activity
+            android:name=".ui.main.customlayout.CustomLayoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Compose" />
+
     </application>
 
 </manifest>
