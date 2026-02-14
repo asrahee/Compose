@@ -581,6 +581,13 @@ fun OutlinedCardExample() {
 /** 단순 체크 박스 */
 @Composable
 fun CheckboxMinimalExample() {
+    /**
+     * MutableState 는 객체의 참조값(주소)이 바뀌어야 데이터가 변했다고 판단함. 객체의 변수값만 바꾸면 주소값은 그대로라
+     * 갱신이 되지 않는 먹통 현상이 발생함
+     *
+     * 이럴 경우 remember 로 지정한 변수에 data.value = preData.value.copy(val = 1) 이런 식으로 copy 를 사용하여
+     * 신규 변수를 만드록 값을 새로 지정해 줘야 한다.
+     */
     var checked by remember { mutableStateOf(true) }
 
     Row(

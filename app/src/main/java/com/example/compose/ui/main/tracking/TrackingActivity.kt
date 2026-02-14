@@ -63,10 +63,14 @@ class TrackingActivity : ComponentActivity() {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            TextVisibilityChangedTest()
+//            TextVisibilityChangedTest()
+            TextVisibilityChangedTest2()
         }
     }
 
+    /**
+     * 3초 후 텍스트 백그라운드 색상 변경 샘플
+     */
     @Composable
     private fun TextVisibilityChangedTest() {
 
@@ -91,6 +95,49 @@ class TrackingActivity : ComponentActivity() {
                         // Do something if not visible
                         Log.d("TrackingActivity", "visible false")
                     }
+                }
+                .background(animatedBgColor)    // 아래 padding 과 순서를 바꾸면 패딩이 먼저 적용되고 텍스트의 배경색이 지정됨(노란색 영역이 줄어듦)
+                .padding(vertical = 8.dp)
+        )
+    }
+
+    data class TextState(
+        val text: String = "Some text",
+        val color: Color = Color.Transparent,
+        val isVisible: Boolean = false
+    )
+
+    /**
+     * textState 를 저장하는 객체에 text view 표시 정보를 저장하여 변경 표시하는 샘플
+     */
+    @Composable
+    private fun TextVisibilityChangedTest2() {
+
+        // 1. 배경색을 관리할 상태 선언 (기본은 투명이나 원하는 색상)
+        var textState by remember { mutableStateOf(TextState()) }
+
+        // 배경색 변경을 위한 타겟 색상 결정
+        val animatedBgColor by animateColorAsState(
+            targetValue = textState.color,
+            animationSpec = tween(durationMillis = 500) // 0.5초 동안 부드럽게 전환
+        )
+
+        Text(
+            text = "Some text",
+            modifier = Modifier
+                .onVisibilityChanged(minDurationMs = 3000) { visible ->
+                    textState = textState.copy(
+                        isVisible = visible,
+                        color = if(visible){
+                            Log.d("TrackingActivity", "visible true")
+                            Color.Yellow
+                        } else {
+                            // Do something if not visible
+                            Log.d("TrackingActivity", "visible false")
+                            Color.Transparent
+                        }
+                    )
+
                 }
                 .background(animatedBgColor)
                 .padding(vertical = 8.dp)
