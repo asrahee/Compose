@@ -112,6 +112,7 @@ import com.example.compose.ui.main.FullscreenActivityCompose
 import com.example.compose.ui.main.adaptivelayout.AdaptiveActivity
 import com.example.compose.ui.main.customlayout.CustomLayoutActivity
 import com.example.compose.ui.main.flow.FlowActivity
+import com.example.compose.ui.main.intrinsic.IntrinsicSizeActivity
 import com.example.compose.ui.main.pager.HorizontalPagerActivity
 import com.example.compose.ui.main.tracking.TrackingActivity
 import com.example.compose.ui.theme.ComposeTheme
@@ -225,7 +226,17 @@ class MainActivity : ComponentActivity() {
                                 )
 
                             }
-//                            LargeFloatingExample {}
+
+                            LargeFloatingExample {
+                                // 내장 기능 측정 액티비티 호출
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        IntrinsicSizeActivity::class.java
+                                    )
+                                )
+                            }
+
 //                            ExtendedExample {}
 //
 //                            // 분할 선택 버튼
@@ -335,33 +346,48 @@ fun TextButtonExample(onClick: () -> Unit){
 /** 플로팅 작업 버튼 */
 @Composable
 fun FloatingExample(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = { onClick() }
-    ) {
-        Icon(Icons.Filled.Add, "Floating actoin button.")
+    Row(modifier = Modifier,
+        verticalAlignment = Alignment.CenterVertically){
+        FloatingActionButton(
+            onClick = { onClick() }
+        ) {
+            Icon(Icons.Filled.Add, "Floating actoin button.")
+        }
+
+        Text("AdaptiveActivity(FloatingActionButton)")
     }
 }
 
 /** 작은 플로팅 작업 버튼 */
 @Composable
 fun FloatingSmallExample(onClick: () -> Unit) {
-    SmallFloatingActionButton(
-        onClick = { onClick() },
-        containerColor =  MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.secondary
-    ) {
-        Icon(Icons.Filled.Add, "Small floating action button")
+    Row(modifier = Modifier,
+        verticalAlignment = Alignment.CenterVertically){
+        SmallFloatingActionButton(
+            onClick = { onClick() },
+            containerColor =  MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.secondary
+        ) {
+            Icon(Icons.Filled.Add, "Small floating action button")
+        }
+
+        Text("TrackingActivity(SmallFloatingActionButton)")
     }
 }
 
 /** 큰 사이즈 플로팅 작업 버튼 */
 @Composable
 fun LargeFloatingExample(onClick: () -> Unit) {
-    LargeFloatingActionButton(
-        onClick = { onClick() },
-        shape = CircleShape,
-    ) {
-        Icon(Icons.Filled.Add, "Large floating action button")
+    Row(modifier = Modifier,
+        verticalAlignment = Alignment.CenterVertically) {
+        LargeFloatingActionButton(
+            onClick = { onClick() },
+            shape = CircleShape,
+        ) {
+            Icon(Icons.Filled.Add, "Large floating action button")
+        }
+
+        Text("IntrinsicSizeActivity(LargeFloatingActionButton)")
     }
 }
 

@@ -62,6 +62,11 @@
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
+        <activity
+            android:name=".ui.main.intrinsic.IntrinsicSizeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Compose" />
+
     </application>
 
 </manifest>

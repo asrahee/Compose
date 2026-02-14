@@ -67,9 +67,6 @@ class AdaptiveActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 콘텐츠가 시스템 바 뒤로 흐르도록 설정(Edge-to-Edge)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         // 기기가 폴딩을 지원하는지 여부를 검사
         checkIsFolding(adaptiveViewModel)
 
