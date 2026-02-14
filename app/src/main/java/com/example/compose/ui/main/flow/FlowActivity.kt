@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowRow
@@ -18,7 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,11 +66,20 @@ class FlowActivity : ComponentActivity() {
 
     @Composable
     private fun FullscreenScreen(){
-//        FlowRowSimpleUsageExample()
-//        FlowRowExample()
-//        FlowRowExample2()
-//        FlowRowExample3()
-        FlowRowExample4()
+
+        val scrollState = rememberScrollState()
+
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(15.dp)
+        ){
+            FlowRowSimpleUsageExample()
+            FlowRowExample()
+            FlowRowExample2()
+            FlowRowExample3()
+            FlowRowExample4()
+        }
     }
 
     /**

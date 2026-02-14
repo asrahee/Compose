@@ -4,11 +4,16 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -56,6 +61,9 @@ import kotlin.contracts.contract
  * SupportingPaneScaffold: 지원 창 표준 레이아웃을 구현합니다.
  */
 class AdaptiveActivity : ComponentActivity() {
+
+    private val adaptiveViewModel : AdaptiveViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,7 +71,7 @@ class AdaptiveActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // 기기가 폴딩을 지원하는지 여부를 검사
-        checkIsFolding()
+        checkIsFolding(adaptiveViewModel)
 
         setContent {
             ComposeTheme {
@@ -72,18 +80,20 @@ class AdaptiveActivity : ComponentActivity() {
                         .systemBarsPadding(),
                     color = Color.White
                 ) {
-                    FullscreenScreen()
+                    FullscreenScreen(adaptiveViewModel)
                 }
             }
         }
     }
 
     @Composable
-    private fun FullscreenScreen(){
+    private fun FullscreenScreen(viewModel: AdaptiveViewModel){
 
         /**
          * 사용법 2 : collectAsStateWithLifecycle 를 사용하여 State(상태)값을 사용
          * 이렇게 하면 컴포저블이 화면에서 사라질 때 데이터 수집도 자동으로 멈춰 안전합니다.
+         *
+         *   ** 이 방법을 추천 **
          */
 //        // 1. 레이아웃 정보를 상태로 변환하여 구독 (Lifecycle에 안전함)
 //        val layoutInfo by WindowInfoTracker.getOrCreate(LocalContext.current)
@@ -101,14 +111,14 @@ class AdaptiveActivity : ComponentActivity() {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-
+            ToastExample(viewModel)
         }
     }
 
     /**
      * 사용법 1 : 참고용, 실제론 FullscreenScreen() 안의 사용법 2 사용 하거나 해당 값을 viewModel 에 저장하여 사용
      */
-    private fun checkIsFolding(){
+    private fun checkIsFolding(viewModel: AdaptiveViewModel){
         // 앱에서 접힌 상태 인식
         lifecycleScope.launch(Dispatchers.Main) {
             // Safely collects from WindowInfoTracker when the lifecycle is
@@ -130,16 +140,44 @@ class AdaptiveActivity : ComponentActivity() {
 
                         val isTableTopPosture = isTableTopPosture(foldingFeature)
                         Log.d("AdaptiveActivity", "isTableTopPosture $isTableTopPosture")
+                        viewModel.setFoldable(isTableTopPosture)
                     }
             }
         }
     }
 
+    /**
+     * contract : 코틀린의 계약 기능
+     *
+     * 만일 이 함수가 true 를 반환한다면, 그것은 인자로 받은 foldFeature 가 절대 null 이 아니라는 뜻
+     *
+     * 왜 쓰나요? (Smart Cast): 원래 코틀린 컴파일러는 함수 외부의 . 로직까지 완벽히 추론하지 못합니다.
+     * 하지만 이 계약을 선언하면, 이 함수가 true를 반환한 이후의 코드에서 컴파일러는 foldFeature를
+     * 자동으로 Non-nullable 타입으로 인식하여 ? 없이도 접근할 수 있게 해줍니다.
+     */
     @OptIn(ExperimentalContracts::class)
     fun isTableTopPosture(foldFeature : FoldingFeature?) : Boolean {
-        contract { returns(true) implies (foldFeature != null) }
+        contract { returns(true) implies (foldFeature != null) }    // 만일 이 함수가 true 를 반환한다면, 그것은 인자로 받은 foldFeature 가 절대 null 이 아니라는 뜻
         return foldFeature?.state == FoldingFeature.State.HALF_OPENED &&
                 foldFeature.orientation == FoldingFeature.Orientation.HORIZONTAL
+    }
+
+    @Composable
+    fun ToastExample(viewModel: AdaptiveViewModel){
+
+        val isFoldable by viewModel.isFoldable
+
+        Column(
+            modifier = Modifier,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if(isFoldable)
+                Text("현재 화면은 폴더블입니다.")
+            else {
+                Text("현재 화면은 폴더블이 아닙니다.")
+            }
+        }
     }
 }
 

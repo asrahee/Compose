@@ -327,7 +327,7 @@ fun TextButtonExample(onClick: () -> Unit){
             contentColor = Color.Black
         )
     ){
-        Text("Text Button")
+        Text("CustomLayoutActivity(Text Button)")
     }
 }
 
