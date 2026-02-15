@@ -80,4 +80,6 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.5") // 최신 버전 사용 권장
 
     implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
+
 }

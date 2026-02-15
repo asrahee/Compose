@@ -38,35 +38,39 @@
             android:theme="@style/Theme.Compose" />
 
         <activity
-            android:name=".ui.main.pager.HorizontalPagerActivity"
+            android:name=".ui.main.layout.pager.HorizontalPagerActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
         <activity
-            android:name=".ui.main.flow.FlowActivity"
+            android:name=".ui.main.layout.flow.FlowActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
         <activity
-            android:name=".ui.main.customlayout.CustomLayoutActivity"
+            android:name=".ui.main.layout.customlayout.CustomLayoutActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
         <activity
-            android:name=".ui.main.adaptivelayout.AdaptiveActivity"
+            android:name=".ui.main.layout.adaptivelayout.AdaptiveActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
         <activity
-            android:name=".ui.main.tracking.TrackingActivity"
+            android:name=".ui.main.layout.tracking.TrackingActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
         <activity
-            android:name=".ui.main.intrinsic.IntrinsicSizeActivity"
+            android:name=".ui.main.layout.intrinsic.IntrinsicSizeActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
 
+        <activity
+            android:name=".ui.main.layout.constraint.ConstraintLayoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Compose" />
     </application>
 
 </manifest>

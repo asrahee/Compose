@@ -109,12 +109,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.example.compose.ui.main.FullscreenActivity
 import com.example.compose.ui.main.FullscreenActivityCompose
-import com.example.compose.ui.main.adaptivelayout.AdaptiveActivity
-import com.example.compose.ui.main.customlayout.CustomLayoutActivity
-import com.example.compose.ui.main.flow.FlowActivity
-import com.example.compose.ui.main.intrinsic.IntrinsicSizeActivity
-import com.example.compose.ui.main.pager.HorizontalPagerActivity
-import com.example.compose.ui.main.tracking.TrackingActivity
+import com.example.compose.ui.main.layout.adaptivelayout.AdaptiveActivity
+import com.example.compose.ui.main.layout.constraint.ConstraintLayoutActivity
+import com.example.compose.ui.main.layout.customlayout.CustomLayoutActivity
+import com.example.compose.ui.main.layout.flow.FlowActivity
+import com.example.compose.ui.main.layout.intrinsic.IntrinsicSizeActivity
+import com.example.compose.ui.main.layout.pager.HorizontalPagerActivity
+import com.example.compose.ui.main.layout.tracking.TrackingActivity
 import com.example.compose.ui.theme.ComposeTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -237,7 +238,15 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-//                            ExtendedExample {}
+                            ExtendedExample {
+                                // ConstraintLayout 샘플 액티비티 호출
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        ConstraintLayoutActivity::class.java
+                                    )
+                                )
+                            }
 //
 //                            // 분할 선택 버튼
 //                            SingleChoiceSegmentedButton()
@@ -397,7 +406,7 @@ fun ExtendedExample(onClick: () -> Unit) {
     ExtendedFloatingActionButton(
         onClick = { onClick() },
         icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
-        text = { Text(text = "Extended FAB") },
+        text = { Text(text = "ConstraintLayoutActivity(ExtendedFloatingActionButton Button)") },
     )
 }
 

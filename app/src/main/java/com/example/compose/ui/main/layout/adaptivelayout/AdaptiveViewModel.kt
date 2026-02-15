@@ -1,4 +1,4 @@
-package com.example.compose.ui.main.adaptivelayout
+package com.example.compose.ui.main.layout.adaptivelayout
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

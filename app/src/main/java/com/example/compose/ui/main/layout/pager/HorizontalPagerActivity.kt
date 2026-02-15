@@ -1,4 +1,4 @@
-package com.example.compose.ui.main.pager
+package com.example.compose.ui.main.layout.pager
 
 import android.os.Bundle
 import android.util.Log

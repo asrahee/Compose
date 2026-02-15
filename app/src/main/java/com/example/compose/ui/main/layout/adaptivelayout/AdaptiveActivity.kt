@@ -1,4 +1,4 @@
-package com.example.compose.ui.main.adaptivelayout
+package com.example.compose.ui.main.layout.adaptivelayout
 
 import android.os.Bundle
 import android.util.Log
@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle

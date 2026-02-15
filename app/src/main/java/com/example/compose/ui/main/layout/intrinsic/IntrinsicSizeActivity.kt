@@ -1,4 +1,4 @@
-package com.example.compose.ui.main.intrinsic
+package com.example.compose.ui.main.layout.intrinsic
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

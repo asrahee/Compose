@@ -1,4 +1,4 @@
-package com.example.compose.ui.main.customlayout
+package com.example.compose.ui.main.layout.customlayout
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -1,4 +1,4 @@
-package com.example.compose.ui.main.flow
+package com.example.compose.ui.main.layout.flow
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
