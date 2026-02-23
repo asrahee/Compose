@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -97,7 +98,9 @@ class UDFSampleActivity : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { viewModel.handleIntent(MainIntent.ClickIncrement) }) {
+                Button(
+                    modifier = Modifier.testTag("테스트 태그"),
+                    onClick = { viewModel.handleIntent(MainIntent.ClickIncrement) }) {
                     Text("증가")
                 }
                 Button(onClick = { viewModel.handleIntent(MainIntent.ClickReset) }) {
@@ -199,3 +202,12 @@ class MainViewModel(
         }
     }
 }
+
+/**
+ * 요약
+ * State: 화면의 현재 상태 (예: 점수, 이름, 로딩 여부) → StateFlow
+ * Intent: 사용자의 액션 (예: 클릭, 입력) → Function Call
+ * Effect: 한 번만 일어나는 사건 (예: 토스트, 이동) → Channel
+ *
+ * 이 구조를 갖추면 안드로이드에서 가장 강력하고 디버깅하기 쉬운 아키텍처를 완성하게 됩니다!
+ */
