@@ -117,6 +117,7 @@ import com.example.compose.ui.main.layout.flow.FlowActivity
 import com.example.compose.ui.main.layout.intrinsic.IntrinsicSizeActivity
 import com.example.compose.ui.main.layout.pager.HorizontalPagerActivity
 import com.example.compose.ui.main.layout.tracking.TrackingActivity
+import com.example.compose.ui.main.udf.UDFSampleActivity
 import com.example.compose.ui.theme.ComposeTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -256,6 +257,15 @@ class MainActivity : ComponentActivity() {
                                         Intent(
                                             this@MainActivity,
                                             ComponentSampleActivity::class.java
+                                        )
+                                    )
+                                },
+
+                                lamda2 = {
+                                    startActivity(
+                                        Intent(
+                                            this@MainActivity,
+                                            UDFSampleActivity::class.java
                                         )
                                     )
                                 }
@@ -424,9 +434,12 @@ fun ExtendedExample(onClick: () -> Unit) {
 /******************************************** 분류 버튼  *******************************************/
 /** 싱글 선택 분할 버튼 */
 @Composable
-fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier, lamda1 : () -> Unit) {
+fun SingleChoiceSegmentedButton(
+    modifier: Modifier = Modifier,
+    lamda1 : () -> Unit,
+    lamda2 : () -> Unit) {
     var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf("Day", "Month", "Week")
+    val options = listOf("ComponentSample", "UDFSample", "Week")
 
     SingleChoiceSegmentedButtonRow {
         options.forEachIndexed { index, label ->
@@ -438,12 +451,13 @@ fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier, lamda1 : () -> Un
                 onClick = {
                     selectedIndex = index
                     when(options[index]){
-                        "Day" -> {
-                            Log.d("SingleChoiceSegmentedButton", "Day")
+                        "ComponentSample" -> {
+                            Log.d("SingleChoiceSegmentedButton", "ComponentSample")
                             lamda1()
                         }
-                        "Month" -> {
-                            Log.d("SingleChoiceSegmentedButton", "Month")
+                        "UDFSample" -> {
+                            Log.d("SingleChoiceSegmentedButton", "UDFSample")
+                            lamda2()
                         }
                         "Week" -> {
                             Log.d("SingleChoiceSegmentedButton", "Week")

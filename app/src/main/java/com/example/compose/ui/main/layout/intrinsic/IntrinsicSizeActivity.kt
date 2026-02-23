@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -70,8 +71,20 @@ class IntrinsicSizeActivity : ComponentActivity() {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
+            Text("일반 Row 에 텍스트, 구분선 표시")
             TwoTexts(text1 = "text1", text2 = "text2")
-            // MyCustomComposable(content = { TwoTexts(text1 = "text1", text2 = "text2") })
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text("레이아웃 측정 measurePolicy > IntrinsicMeasureScope 사용")
+            MyCustomComposable(content = { TwoTexts(text1 = "text1", text2 = "text2")  })
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            MyCustomComposable {
+                TwoTexts(text1 = "첫 번째 줄", text2 = "왼쪽/오른쪽")
+                TwoTexts(text1 = "두 번째 줄", text2 = "다시 가로로")
+            }
         }
     }
 
