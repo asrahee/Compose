@@ -71,6 +71,12 @@
             android:name=".ui.main.layout.constraint.ConstraintLayoutActivity"
             android:exported="false"
             android:theme="@style/Theme.Compose" />
+
+        <activity
+            android:name=".ui.main.component.ComponentSampleActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Compose" />
+
     </application>
 
 </manifest>

@@ -109,6 +109,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.example.compose.ui.main.FullscreenActivity
 import com.example.compose.ui.main.FullscreenActivityCompose
+import com.example.compose.ui.main.component.ComponentSampleActivity
 import com.example.compose.ui.main.layout.adaptivelayout.AdaptiveActivity
 import com.example.compose.ui.main.layout.constraint.ConstraintLayoutActivity
 import com.example.compose.ui.main.layout.customlayout.CustomLayoutActivity
@@ -247,9 +248,18 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                             }
-//
-//                            // 분할 선택 버튼
-//                            SingleChoiceSegmentedButton()
+
+                            // 분할 선택 버튼
+                            SingleChoiceSegmentedButton(
+                                lamda1 = {
+                                    startActivity(
+                                        Intent(
+                                            this@MainActivity,
+                                            ComponentSampleActivity::class.java
+                                        )
+                                    )
+                                }
+                            )
 //                            MultiChoiceSegmentedButton()
 //
 //                            // 카드
@@ -414,7 +424,7 @@ fun ExtendedExample(onClick: () -> Unit) {
 /******************************************** 분류 버튼  *******************************************/
 /** 싱글 선택 분할 버튼 */
 @Composable
-fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier) {
+fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier, lamda1 : () -> Unit) {
     var selectedIndex by remember { mutableIntStateOf(0) }
     val options = listOf("Day", "Month", "Week")
 
@@ -425,7 +435,21 @@ fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier) {
                     index = index,
                     count = options.size
                 ),
-                onClick = { selectedIndex = index },
+                onClick = {
+                    selectedIndex = index
+                    when(options[index]){
+                        "Day" -> {
+                            Log.d("SingleChoiceSegmentedButton", "Day")
+                            lamda1()
+                        }
+                        "Month" -> {
+                            Log.d("SingleChoiceSegmentedButton", "Month")
+                        }
+                        "Week" -> {
+                            Log.d("SingleChoiceSegmentedButton", "Week")
+                        }
+                    }
+                },
                 selected = index == selectedIndex,
                 label = { Text(label) }
             )
