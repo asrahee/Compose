@@ -19,10 +19,13 @@ import com.example.compose.ui.theme.ComposeTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
@@ -87,11 +90,23 @@ class ComponentSampleActivity : ComponentActivity() {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            BottomSheetDemo()
+            // 바텀 시트 샘플
+//            BottomSheetDemo()
+
+            // 부분 바텀 시트 샘플
+            PartialBottomSheet()
         }
     }
 
-
+    /**
+     * 바텀 시트 샘플
+     *
+     * 프로그래매틱 방식으로 시트를 확장하고 축소하려면 SheetState를 사용합니다.
+     * rememberModalBottomSheetState를 사용하여 sheetState 매개변수로 ModalBottomSheet에 전달해야 하는 SheetState 인스턴스를 만들 수 있습니다.
+     * SheetState를 통해 현재 시트 상태와 관련된 속성뿐만 아니라 show 및 hide 함수에도 액세스할 수 있습니다.
+     * 이러한 정지 함수는 CoroutineScope가 필요하고(예: rememberCoroutineScope 사용) UI 이벤트에 대한 응답으로 호출할 수 있습니다.
+     * 바텀 시트를 숨길 때 컴포지션에서 ModalBottomSheet를 삭제해야 합니다.
+     */
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun BottomSheetDemo() {
@@ -160,6 +175,52 @@ class ComponentSampleActivity : ComponentActivity() {
             }
         }
     }
+
+    /**
+     * 하단 시트를 부분적으로 표시한 다음 사용자가 전체 화면으로 만들거나 닫도록 할 수 있습니다.
+     * 이렇게 하려면 skipPartiallyExpanded이 false로 설정된 SheetState 인스턴스를 ModalBottomSheet에 전달합니다.
+     */
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun PartialBottomSheet() {
+        var showBottomSheet by remember { mutableStateOf(false) }
+        val sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = false,
+        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Button(
+                onClick = { showBottomSheet = true }
+            ) {
+                Text("Display partial bottom sheet")
+            }
+
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    // 1. modifier에 직접 상태바 패딩을 적용합니다.
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        // 화면 상단 스테이터스 바까지 확장되지 않도롯 설정
+                        .statusBarsPadding(),
+                    sheetState = sheetState,
+                    onDismissRequest = { showBottomSheet = false }
+                ) {
+                    // 시트 내부 콘텐츠
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Text("상태바 아래에서 시작되는 바텀시트입니다.")
+                    }
+                }
+            }
+        }
+    }
+
     @Composable
     fun ButtonDemo() {
         // [START android_compose_layout_material_button]
